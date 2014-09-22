@@ -18,7 +18,7 @@
     local ahead behind remote
 
     if [[ -n $(git ls-files --other --exclude-standard 2> /dev/null) ]]; then
-        hook_com[unstaged]=' %F{174}%f'
+        hook_com[unstaged]='%F{174}'
     fi
 
     if [[ -s ${hook_com[base]}/.git/refs/stash ]] ; then
@@ -97,10 +97,10 @@ function prompt_minair_setup {
   # Set vcs_info parameters.
   zstyle ':vcs_info:*' enable bzr git hg svn
   zstyle ':vcs_info:*' check-for-changes true
-  zstyle ':vcs_info:*' stagedstr ' %F{150}%f'
-  zstyle ':vcs_info:*' unstagedstr ' %F{179}%f'
-  zstyle ':vcs_info:*' formats '%r%F{179}/%f%S %F{234}%f %s %b%c%u%m'
-  zstyle ':vcs_info:*' actionformats "%r%F{179}/%f%S %F{234}%f %s %b%c%u|[%F{110}%a%f]"
+  zstyle ':vcs_info:*' stagedstr '%F{150}'
+  zstyle ':vcs_info:*' unstagedstr '%F{179}'
+  zstyle ':vcs_info:*' formats '%r%F{179}/%f%S %F{234}%f %s%m%c%u%f%b'
+  zstyle ':vcs_info:*' actionformats "%r%F{179}/%f%S %F{234}%f %s%m%c%u%f%b|[%F{110}%a%f]"
   zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b|%F{110}%r%f'
   zstyle ':vcs_info:git*+set-message:*' hooks git-status
 
