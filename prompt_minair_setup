@@ -41,7 +41,7 @@
     fi
 
     hook_misc=${(j: :)misc}
-    [[ -n $hook_misc ]] && hook_com[misc]=" %F{179}[%f${hook_misc}%F{179}]%f"
+    [[ -n $hook_misc ]] && hook_com[misc]="%F{179}[%f${hook_misc}%F{179}]%f"
 
     return 0
 }
