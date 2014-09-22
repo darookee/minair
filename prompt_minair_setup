@@ -106,8 +106,8 @@ function prompt_minair_setup {
 
   local -a parts
 
-  [[ ( -n $SSH_CLIENT || `logname` != `whoami` ) ]] && parts+=( '%F{237}%(!.%K{174}.%K{150}) %n %(!.%F{174}.%F{150})%K{110} ' ) || parts+=( '%(!.%K{174}%n."") %(!.%F{174}.%F{150})%K{110} ' )
-  parts+=( '%F{238}${HOST} %F{110}%K{238}')
+  [[ ( -n $SSH_CLIENT || `logname` != `whoami` ) ]] && parts+=( '%F{237}%(!.%K{174}.%K{150}) %n %(!.%F{174}.%F{150})%K{236} ' ) || parts+=( '%(!.%K{174}%n."") %(!.%F{174}.%F{150})%K{236} ' )
+  parts+=( '%F{249}${HOST} %F{236}%K{238}')
   parts+=( '%F{249} ${_prompt_minair_pwd_or_vcs}' )
   parts+=( '%(?.%F{238}.%F{174})%k%f' )
 
