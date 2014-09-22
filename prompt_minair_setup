@@ -1,0 +1,120 @@
+#
+# A airline-inspired theme, based on the 'minimal' prompt
+# that displays basic information.
+#
+# Authors:
+#   Brian Tse <briankftse@gmail.com>
+#   Sorin Ionescu <sorin.ionescu@gmail.com>
+#   Nils Uliczka <nils.uliczka@darookee.net>
+#
+# Screenshots:
+#   pending
+#
+
++vi-git-status () {
+    local -a stashes
+    local -a misc
+    local -a gitstatus
+    local ahead behind remote
+
+    if [[ -n $(git ls-files --other --exclude-standard 2> /dev/null) ]]; then
+        hook_com[unstaged]=' %F{174}%f'
+    fi
+
+    if [[ -s ${hook_com[base]}/.git/refs/stash ]] ; then
+        stashes=$(git stash list 2>/dev/null | wc -l)
+        [[ -n $stashes ]] && misc+=("%F{110}*${stashes}%f")
+    fi
+
+    # Are we on a remote-tracking branch?
+    remote=${$(git rev-parse --verify ${hook_com[branch]}@{upstream} \
+        --symbolic-full-name 2>/dev/null)/refs\/remotes\/}
+
+    if [[ -n ${remote} ]] ; then
+        ahead=$(git rev-list ${hook_com[branch]}@{upstream}..HEAD 2>/dev/null | wc -l)
+        (( $ahead )) && gitstatus+=( "%F{150}+${ahead}%f" )
+
+        behind=$(git rev-list HEAD..${hook_com[branch]}@{upstream} 2>/dev/null | wc -l)
+        (( $behind )) && gitstatus+=( "%F{174}-${behind}%f" )
+
+        misc+=("${(j:/:)gitstatus}")
+    fi
+
+    hook_misc=${(j: :)misc}
+    [[ -n $hook_misc ]] && hook_com[misc]=" %F{179}[%f${hook_misc}%F{179}]%f"
+
+    return 0
+}
+
+start_time=$SECONDS
+function prompt_minair_preexec {
+  start_time=$SECONDS
+}
+
+function calc_elapsed_time {
+  if [[ $timer_result -ge 3600 ]]; then
+    let "timer_hours = $timer_result / 3600"
+    let "remainder = $timer_result % 3600"
+    let "timer_minutes = $remainder / 60"
+    let "timer_seconds = $remainder % 60"
+    print -P "%B%F{red}>>> elapsed time ${timer_hours}h${timer_minutes}m${timer_seconds}s%b"
+  elif [[ $timer_result -ge 60 ]]; then
+    let "timer_minutes = $timer_result / 60"
+    let "timer_seconds = $timer_result % 60"
+    print -P "%B%F{yellow}>>> elapsed time ${timer_minutes}m${timer_seconds}s%b"
+  elif [[ $timer_result -gt 10 ]]; then
+    print -P "%B%F{green}>>> elapsed time ${timer_result}s%b"
+  fi
+}
+
+function prompt_minair_precmd {
+  vcs_info
+
+  [[ ! -w $PWD ]] && _prompt_minair_pwd_color='%F{174}' _prompt_minair_pwd_appendix=' ' || _prompt_minair_pwd_color='%f' _prompt_minair_pwd_appendix=''
+
+  [[ -n ${vcs_info_msg_0_} ]] && _prompt_minair_pwd_or_vcs="${vcs_info_msg_0_} " || _prompt_minair_pwd_or_vcs="${_prompt_minair_pwd_color}%2~${_prompt_minair_pwd_appendix}%f "
+
+  timer_result=$(($SECONDS-$start_time))
+  if [[ $timer_result -gt 10 ]]; then
+      calc_elapsed_time
+  fi
+  start_time=$SECONDS
+}
+
+function prompt_minair_setup {
+  setopt LOCAL_OPTIONS
+  unsetopt XTRACE KSH_ARRAYS
+  prompt_opts=(cr percent subst)
+
+  # Load required functions.
+  autoload -Uz add-zsh-hook
+  autoload -Uz vcs_info
+
+  # Add hook for calling vcs_info before each command.
+  add-zsh-hook preexec prompt_minair_preexec
+  add-zsh-hook precmd prompt_minair_precmd
+
+  # Set vcs_info parameters.
+  zstyle ':vcs_info:*' enable bzr git hg svn
+  zstyle ':vcs_info:*' check-for-changes true
+  zstyle ':vcs_info:*' stagedstr ' %F{150}%f'
+  zstyle ':vcs_info:*' unstagedstr ' %F{179}%f'
+  zstyle ':vcs_info:*' formats '%r%F{179}/%f%S %F{234}%f %s %b%c%u%m'
+  zstyle ':vcs_info:*' actionformats "%r%F{179}/%f%S %F{234}%f %s %b%c%u|[%F{110}%a%f]"
+  zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b|%F{110}%r%f'
+  zstyle ':vcs_info:git*+set-message:*' hooks git-status
+
+  local -a parts
+
+  [[ ( -n $SSH_CLIENT || `logname` != `whoami` ) ]] && parts+=( '%F{237}%(!.%K{174}.%K{150}) %n %(!.%F{174}.%F{150})%K{110} ' ) || parts+=( '%(!.%K{174}%n."") %(!.%F{174}.%F{150})%K{110} ' )
+  parts+=( '%F{238}${HOST} %F{110}%K{238}')
+  parts+=( '%F{249} ${_prompt_minair_pwd_or_vcs}' )
+  parts+=( '%(?.%F{238}.%F{174})%k%f' )
+
+  # Define prompts.
+  PROMPT="${(j::)parts} "
+  RPROMPT=''
+  SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
+}
+
+prompt_minair_setup "$@"
