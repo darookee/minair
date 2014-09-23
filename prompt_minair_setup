@@ -119,7 +119,7 @@ function prompt_minair_setup {
   # Define prompts.
   PROMPT="${(j::)parts} "
   RPROMPT=''
-  SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
+  SPROMPT='zsh: correct %F{174}%R%f to %F{150}%r%f [nyae]? '
 }
 
 prompt_minair_setup "$@"
