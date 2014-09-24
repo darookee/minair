@@ -59,15 +59,15 @@ function calc_elapsed_time {
     let "timer_minutes = $remainder / 60"
     let "timer_seconds = $remainder % 60"
     print -P "%f%K{238}%F{174} $(date -d @${start_epoch} +"%T %Y-%m-%d") %F{236}%F{174} $(date +"%T %y-%m-%d") %b%k%F{238}%f"
-    print -P "%f%K{174}%F{236} elapsed time %B${timer_hours}h${timer_minutes}m${timer_seconds}s%b%k%F{174}%f"
+    print -P "%f%K{174}%F{236} elapsed time %F{236}%F{150} %B${timer_hours}h${timer_minutes}m${timer_seconds}s%b%k%F{174}%f"
   elif [[ $timer_result -ge 60 ]]; then
     let "timer_minutes = $timer_result / 60"
     let "timer_seconds = $timer_result % 60"
     print -P "%f%K{238}%F{179} $(date -d @${start_epoch} +"%T %Y-%m-%d") %F{236}%F{179} $(date +"%T %y-%m-%d") %b%k%F{238}%f"
-    print -P "%f%K{179}%F{236} elapsed time %B${timer_minutes}m${timer_seconds}s%b%k%F{179}%f"
+    print -P "%f%K{179}%F{236} elapsed time %F{236}%F{150} %B${timer_minutes}m${timer_seconds}s%b%k%F{179}%f"
   elif [[ $timer_result -gt 10 ]]; then
     print -P "%f%K{238}%F{150} $(date -d @${start_epoch} +"%T %Y-%m-%d") %F{236}%F{150} $(date +"%T %y-%m-%d") %b%k%F{238}%f"
-    print -P "%f%K{150}%F{236} elapsed time %B${timer_result}s%b%k%F{150}%f"
+    print -P "%f%K{150}%F{236} elapsed time %F{236}%F{150} %B${timer_result}s%b%k%F{150}%f"
   fi
 }
 
